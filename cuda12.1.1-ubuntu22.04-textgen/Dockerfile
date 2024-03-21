@@ -10,17 +10,20 @@ WORKDIR /root
 
 # Install text-generation-webui, including all extensions
 # Also includes exllama
+# We remove any installed exllamav2 and use the same version used on text-generation-webui
 # We remove the ExLlama automatically installed by text-generation-webui
 # so we're always up-to-date with any ExLlama changes, which will auto compile its own extension
 RUN git clone https://github.com/oobabooga/text-generation-webui && \
     cd text-generation-webui && \
+    pip3 uninstall exllamav2 && \
     pip3 install -r requirements.txt && \
     bash -c 'for req in extensions/*/requirements.txt ; do pip3 install -r "$req" ; done' && \
-    #pip3 uninstall -y exllama && \
     mkdir -p repositories && \
     cd repositories && \
     git clone https://github.com/turboderp/exllama && \
-    pip3 install -r exllama/requirements.txt
+    pip3 install -r exllama/requirements.txt && \
+    pip3 uninstall -y safetensors transformers && \
+    pip3 install safetensors transformers
 
 # Install AutoGPTQ, overwriting the version automatically installed by text-generation-webui
 # May not be needed any more? But just in case
